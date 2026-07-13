@@ -1,0 +1,26 @@
+{
+  "name": "@workspace/school-router",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "typecheck": "tsc --build"
+  },
+  "dependencies": {
+    "@trpc/server": "^11.6.0",
+    "@workspace/db": "workspace:*",
+    "drizzle-orm": "catalog:",
+    "openai": "^6.45.0",
+    "pptxgenjs": "^4.0.1",
+    "superjson": "^1.13.3",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "catalog:"
+  }
+}
