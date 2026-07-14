@@ -1,0 +1,78 @@
+{
+  // ── SmartSchool Windows Electron Build Configuration ──────────────────────
+  appId: "my.smartschool.smkbangsar",
+  productName: "SmartSchool",
+  copyright: "SMK Bangsar",
+
+  directories: {
+    // Output installer / portable to this folder
+    output: "dist-electron",
+    // Static assets (icon, banner) live here
+    buildResources: "build-assets"
+  },
+
+  // Files that form the Electron shell (main + preload only)
+  files: [
+    "src/main.mjs",
+    "src/preload.mjs"
+  ],
+
+  // Extra resources copied into app.asar.unpacked / resources at packaging time
+  extraResources: [
+    // Bundled API server (esbuild output — fully self-contained)
+    {
+      from: "../../artifacts/api-server/dist",
+      to: "api-server/dist",
+      filter: ["**/*"]
+    },
+    // Built frontend static files (Vite output)
+    {
+      from: "../../artifacts/school-app/dist/public",
+      to: "frontend",
+      filter: ["**/*"]
+    },
+    // Bundled config template and any other static resources
+    {
+      from: "resources",
+      to: ".",
+      filter: ["**/*"]
+    }
+  ],
+
+  // ── Windows targets ───────────────────────────────────────────────────────
+  win: {
+    target: [
+      // NSIS installer → SmartSchool-Setup.exe  (recommended for distribution)
+      { target: "nsis",     arch: ["x64"] },
+      // Portable single-file exe → SmartSchool-Portable.exe
+      { target: "portable", arch: ["x64"] }
+    ],
+    icon: "build-assets/icon.ico"
+  },
+
+  // NSIS installer options
+  nsis: {
+    oneClick: false,
+    perMachine: false,
+    allowElevation: true,
+    allowToChangeInstallationDirectory: true,
+    installerHeaderIcon: "build-assets/icon.ico",
+    createDesktopShortcut: true,
+    createStartMenuShortcut: true,
+    shortcutName: "SmartSchool"
+  },
+
+  // Portable exe options
+  portable: {
+    artifactName: "SmartSchool-Portable.exe"
+  },
+
+  // Compression (normal strikes a good balance)
+  compression: "normal",
+
+  // Asar packaging — api-server must be unpacked so Node can load .mjs workers
+  asar: true,
+  asarUnpack: [
+    "src/**"
+  ]
+}
