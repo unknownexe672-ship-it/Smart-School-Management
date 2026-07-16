@@ -3,7 +3,7 @@ services:
     name: amira-api
     env: node
     plan: starter
-    buildCommand: pnpm install --no-frozen-lockfile && pnpm --filter @workspace/api-server build
+    buildCommand: pnpm install && pnpm --filter @workspace/api-server build
     startCommand: pnpm --filter @workspace/api-server start
     envVars:
       - key: NODE_ENV

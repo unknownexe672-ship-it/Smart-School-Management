@@ -1,7 +1,7 @@
 [build]
   base = "/"
   publish = "artifacts/school-app/dist"
-  command = "pnpm install --no-frozen-lockfile && pnpm --filter @workspace/school-app build"
+  command = "pnpm install && pnpm --filter @workspace/school-app build"
 
 [build.environment]
   NODE_VERSION = "20"
