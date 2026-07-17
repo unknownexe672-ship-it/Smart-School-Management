@@ -47,6 +47,7 @@ import {
   deleteExpense,
   getExpensesByDateRange,
   getExpenseStats,
+  seedDatabase,
   saveChatMessage,
   getChatHistory,
   getMonthlyExpenseSummary,
@@ -57,7 +58,7 @@ import {
 
 // ── DeepSeek client (OpenAI-compatible) ──────────────────────────────────────
 const deepseek = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY ?? "sk-placeholder",
+  apiKey: process.env.DEEPSEEK_API_KEY ?? "sk-c11e6f39258f46d79846084f3ac65c1a",
   baseURL: "https://api.deepseek.com/v1",
 });
 
@@ -1314,6 +1315,13 @@ Format each insight as: [#] [Trend/Observation]: [Implication]. Action: [Specifi
 
         return { pptxBase64, filename };
       }),
+  }),
+
+  // ============================================================================
+  // ADMIN: SEED DATABASE WITH DEMO DATA
+  // ============================================================================
+  admin: router({
+    seedDatabase: publicProcedure.mutation(() => seedDatabase()),
   }),
 });
 

@@ -519,3 +519,148 @@ export async function getSchoolAnalyticsData() {
     topTeachers,
   };
 }
+
+// ============================================================================
+// SEED DATABASE WITH DEMO DATA
+// ============================================================================
+
+export async function seedDatabase() {
+  if (IS_DEMO_MODE) throw new Error("Cannot seed database in demo mode");
+
+  try {
+    // Clear existing data
+    await db.delete(schedules);
+    await db.delete(resourceBorrowings);
+    await db.delete(classes);
+    await db.delete(teachers);
+    await db.delete(employees);
+    await db.delete(resources);
+    await db.delete(expenses);
+    await db.delete(rooms);
+
+    // Insert teachers
+    const now = new Date();
+    for (const teacher of DEMO_TEACHERS as any[]) {
+      await db.insert(teachers).values({
+        name: teacher.name,
+        email: teacher.email,
+        phone: teacher.phone,
+        gender: teacher.gender as "male" | "female" | "other",
+        subjects: Array.isArray(teacher.subjects) ? teacher.subjects.join(", ") : teacher.subjects,
+        qualifications: teacher.qualifications,
+        yearsOfExperience: teacher.yearsOfExperience,
+        performanceRating: parseFloat(teacher.performanceRating),
+        attendancePercentage: parseFloat(teacher.attendancePercentage),
+        status: teacher.status as "active" | "inactive" | "on_leave",
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+
+    // Insert rooms
+    for (const room of DEMO_ROOMS as any[]) {
+      await db.insert(rooms).values({
+        name: room.name,
+        type: "classroom" as any,
+        capacity: room.capacity,
+        facilities: Array.isArray(room.facilities) ? room.facilities.join(", ") : room.facilities,
+        isAvailable: room.status === "available",
+        createdAt: now,
+      });
+    }
+
+    // Insert classes
+    for (const cls of DEMO_CLASSES as any[]) {
+      await db.insert(classes).values({
+        name: cls.name,
+        grade: cls.form.toString(),
+        subject: cls.subject,
+        teacherId: cls.teacherId,
+        studentCount: cls.studentCount,
+        isActive: cls.status === "active",
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+
+    // Insert schedules
+    for (const sched of DEMO_SCHEDULES as any[]) {
+      const dayMap: Record<number, any> = {
+        1: "monday",
+        2: "tuesday",
+        3: "wednesday",
+        4: "thursday",
+        5: "friday",
+      };
+      await db.insert(schedules).values({
+        classId: sched.classId,
+        teacherId: sched.teacherId,
+        roomId: sched.roomId,
+        subject: sched.subject,
+        dayOfWeek: dayMap[sched.dayOfWeek] || "monday",
+        startTime: sched.startTime,
+        endTime: sched.endTime,
+        isActive: sched.status === "active",
+        createdAt: now,
+      });
+    }
+
+    // Insert employees
+    for (const emp of DEMO_EMPLOYEES as any[]) {
+      await db.insert(employees).values({
+        name: emp.name,
+        email: emp.email,
+        phone: emp.phone,
+        gender: emp.gender as "male" | "female" | "other",
+        role: emp.position,
+        department: emp.department,
+        employmentStatus: emp.employeeType as any,
+        performanceRating: parseFloat(emp.performanceRating),
+        attendancePercentage: parseFloat(emp.attendancePercentage),
+        startDate: emp.joinDate,
+        status: emp.status as "active" | "inactive" | "on_leave",
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+
+    // Insert resources
+    for (const res of DEMO_RESOURCES as any[]) {
+      await db.insert(resources).values({
+        name: res.name,
+        category: res.category,
+        quantity: res.quantity,
+        unit: res.unit,
+        reorderLevel: res.reorderLevel,
+        cost: parseFloat(res.unitCost),
+        supplier: res.supplier,
+        location: res.location,
+        status: res.status as "available" | "low_stock" | "out_of_stock" | "borrowed",
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+
+    // Insert expenses
+    for (const exp of DEMO_EXPENSES as any[]) {
+      await db.insert(expenses).values({
+        title: exp.title,
+        description: exp.description,
+        amount: parseFloat(exp.amount),
+        category: exp.category,
+        expenseDate: exp.expenseDate,
+        paymentStatus: exp.status,
+        receiptNumber: exp.receiptNumber,
+        vendor: exp.vendor,
+        approvalStatus: "approved" as any,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+
+    return { success: true, message: "Database seeded successfully!" };
+  } catch (error) {
+    console.error("Seed error:", error);
+    throw error;
+  }
+}
