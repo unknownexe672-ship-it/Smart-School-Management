@@ -557,7 +557,7 @@ export async function seedDatabase() {
         status: teacher.status as "active" | "inactive" | "on_leave",
         createdAt: now,
         updatedAt: now,
-      });
+      }).onConflictDoNothing({ target: teachers.email });
     }
 
     // Insert rooms
@@ -569,7 +569,7 @@ export async function seedDatabase() {
         facilities: Array.isArray(room.facilities) ? room.facilities.join(", ") : room.facilities,
         isAvailable: room.status === "available",
         createdAt: now,
-      });
+      }).onConflictDoNothing({ target: rooms.name });
     }
 
     // Insert classes
@@ -624,7 +624,7 @@ export async function seedDatabase() {
         status: emp.status as "active" | "inactive" | "on_leave",
         createdAt: now,
         updatedAt: now,
-      });
+      }).onConflictDoNothing({ target: employees.email });
     }
 
     // Insert resources
