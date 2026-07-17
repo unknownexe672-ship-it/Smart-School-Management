@@ -528,15 +528,18 @@ export async function seedDatabase() {
   if (IS_DEMO_MODE) throw new Error("Cannot seed database in demo mode");
 
   try {
-    // Clear existing data
-    await db.delete(schedules);
-    await db.delete(resourceBorrowings);
-    await db.delete(classes);
-    await db.delete(teachers);
-    await db.delete(employees);
-    await db.delete(resources);
-    await db.delete(expenses);
-    await db.delete(rooms);
+    // Clear existing data in correct dependency order
+    // Delete in reverse order of foreign key dependencies
+    try { await db.delete(schedules); } catch (e) { console.log("schedules delete:", e); }
+    try { await db.delete(resourceBorrowings); } catch (e) { console.log("resourceBorrowings delete:", e); }
+    try { await db.delete(teacherAttendance); } catch (e) { console.log("teacherAttendance delete:", e); }
+    try { await db.delete(employeeAttendance); } catch (e) { console.log("employeeAttendance delete:", e); }
+    try { await db.delete(classes); } catch (e) { console.log("classes delete:", e); }
+    try { await db.delete(teachers); } catch (e) { console.log("teachers delete:", e); }
+    try { await db.delete(employees); } catch (e) { console.log("employees delete:", e); }
+    try { await db.delete(resources); } catch (e) { console.log("resources delete:", e); }
+    try { await db.delete(expenses); } catch (e) { console.log("expenses delete:", e); }
+    try { await db.delete(rooms); } catch (e) { console.log("rooms delete:", e); }
 
     // Insert teachers
     const now = new Date();
