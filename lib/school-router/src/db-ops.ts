@@ -544,6 +544,14 @@ export async function seedDatabase() {
     // Insert teachers
     const now = new Date();
     for (const teacher of DEMO_TEACHERS as any[]) {
+      const existing = await db
+        .select({ id: teachers.id })
+        .from(teachers)
+        .where(eq(teachers.email, teacher.email))
+        .limit(1);
+
+      if (existing.length > 0) continue;
+
       await db.insert(teachers).values({
         name: teacher.name,
         email: teacher.email,
@@ -557,11 +565,19 @@ export async function seedDatabase() {
         status: teacher.status as "active" | "inactive" | "on_leave",
         createdAt: now,
         updatedAt: now,
-      }).onConflictDoNothing({ target: teachers.email });
+      });
     }
 
     // Insert rooms
     for (const room of DEMO_ROOMS as any[]) {
+      const existing = await db
+        .select({ id: rooms.id })
+        .from(rooms)
+        .where(eq(rooms.name, room.name))
+        .limit(1);
+
+      if (existing.length > 0) continue;
+
       await db.insert(rooms).values({
         name: room.name,
         type: "classroom" as any,
@@ -569,7 +585,7 @@ export async function seedDatabase() {
         facilities: Array.isArray(room.facilities) ? room.facilities.join(", ") : room.facilities,
         isAvailable: room.status === "available",
         createdAt: now,
-      }).onConflictDoNothing({ target: rooms.name });
+      });
     }
 
     // Insert classes
@@ -610,6 +626,14 @@ export async function seedDatabase() {
 
     // Insert employees
     for (const emp of DEMO_EMPLOYEES as any[]) {
+      const existing = await db
+        .select({ id: employees.id })
+        .from(employees)
+        .where(eq(employees.email, emp.email))
+        .limit(1);
+
+      if (existing.length > 0) continue;
+
       await db.insert(employees).values({
         name: emp.name,
         email: emp.email,
@@ -624,7 +648,7 @@ export async function seedDatabase() {
         status: emp.status as "active" | "inactive" | "on_leave",
         createdAt: now,
         updatedAt: now,
-      }).onConflictDoNothing({ target: employees.email });
+      });
     }
 
     // Insert resources
